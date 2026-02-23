@@ -1,6 +1,6 @@
 {
   "name": "@mcptoolshop/a11y-evidence-engine",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "Headless accessibility evidence engine with prov-spec provenance",
   "main": "src/cli.js",
   "bin": {
