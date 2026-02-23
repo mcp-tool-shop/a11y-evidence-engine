@@ -50,7 +50,7 @@ jobs:
 
     - name: Verify CLI works
       run: |
-        node bin/a11y-engine.js scan fixtures/bad --out test-results
+        node bin/a11y-engine.js scan fixtures/bad --out test-results || test $? -eq 2
         test -d test-results
 
   lint:
