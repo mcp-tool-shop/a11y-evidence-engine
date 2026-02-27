@@ -3,6 +3,22 @@
 const { scan } = require("./scan.js");
 const path = require("path");
 
+// ---------------------------------------------------------------------------
+// Structured Error Shape (Shipcheck Gate B)
+// code · message · hint · cause? · retryable?
+// ---------------------------------------------------------------------------
+
+/**
+ * Emit a structured error to stderr and return exit code 3.
+ * @param {{ code: string, message: string, hint: string, cause?: string, retryable?: boolean }} err
+ * @returns {number}
+ */
+function emitError(err) {
+  console.error(`[${err.code}] ${err.message}`);
+  if (err.hint) console.error(`  Hint: ${err.hint}`);
+  return 3;
+}
+
 const HELP = `
 a11y-engine - Headless accessibility evidence engine
 
@@ -31,9 +47,12 @@ async function run(args) {
     return runScan(args.slice(1));
   }
 
-  console.error(`Unknown command: ${command}`);
-  console.log(HELP);
-  return 3;
+  return emitError({
+    code: "INPUT_UNKNOWN_COMMAND",
+    message: `Unknown command: ${command}`,
+    hint: 'Run "a11y-engine --help" for usage.',
+    retryable: false,
+  });
 }
 
 async function runScan(args) {
@@ -50,8 +69,12 @@ async function runScan(args) {
   }
 
   if (!targetPath) {
-    console.error("Error: No target path specified");
-    return 3;
+    return emitError({
+      code: "INPUT_MISSING",
+      message: "No target path specified.",
+      hint: "Provide a file or directory to scan: a11y-engine scan <path>",
+      retryable: false,
+    });
   }
 
   try {
@@ -66,8 +89,13 @@ async function runScan(args) {
     // Exit code based on error count
     return result.summary.errors > 0 ? 2 : 0;
   } catch (err) {
-    console.error(`Scan failed: ${err.message}`);
-    return 3;
+    return emitError({
+      code: "SCAN_FAILED",
+      message: `Scan failed: ${err.message}`,
+      hint: "Check that the path exists and contains valid HTML files.",
+      cause: err.message,
+      retryable: false,
+    });
   }
 }
 

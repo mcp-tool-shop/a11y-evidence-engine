@@ -1,6 +1,6 @@
 {
   "name": "@mcptoolshop/a11y-evidence-engine",
-  "version": "0.3.3",
+  "version": "1.0.0",
   "description": "Headless accessibility evidence engine with prov-spec provenance",
   "main": "src/cli.js",
   "bin": {
@@ -8,6 +8,7 @@
   },
   "scripts": {
     "test": "node --test test/*.test.js",
+    "verify": "npm test && node bin/a11y-engine.js --help > /dev/null && node bin/a11y-engine.js scan fixtures/bad --out verify-out && npm pack --dry-run",
     "scan": "node bin/a11y-engine.js scan"
   },
   "keywords": [
